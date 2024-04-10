@@ -1,5 +1,9 @@
 # Capstone: Restaurant Reservation System
 
+- CHANGE LOG (to be deleted later)
+  - 4/10 1st commit: migration and seed data for reservations table complete
+
+
 > You have been hired as a full stack developer at _Periodic Tables_, a startup that is creating a reservation system for fine dining restaurants.
 > The software is used only by restaurant personnel when a customer calls to request a reservation.
 > At this point, the customers will not access the system online.
