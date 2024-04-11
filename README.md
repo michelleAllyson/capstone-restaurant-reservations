@@ -4,6 +4,7 @@
   - 4/10 1st commit: migration and seed data for reservations table complete
         - 2nd commit: ReservationForm.js and ReservationError.js components created 
         - 3rd commit: Errors added, work on reservation frontend and backend
+        - 4th commit: Changes to controller and server for reservations, asyncErrorBoundary added, migration and seed data completed for "tables" table.
 
 
 > You have been hired as a full stack developer at _Periodic Tables_, a startup that is creating a reservation system for fine dining restaurants.
