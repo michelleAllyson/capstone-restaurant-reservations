@@ -22,8 +22,7 @@ const hasRequiredProperties = hasProperties(
     "created_at",
     "updated_at",
   ];
-
-
+  
   function hasOnlyValidProperties(req, res, next) {
     const { data = {} } = req.body;
 
@@ -40,12 +39,58 @@ const hasRequiredProperties = hasProperties(
     next();
   }
 
-  function hasValidDate(req, res, next) {
-    const { data = {} } = req.body;
-  }
 
-  
-  
+  function create(req, res, next) {
+    const { data: { first_name, last_name, reservation_date, reservation_time, people } = {} } = req.body;
+    
+    //Check to see if first_name is missing or empty
+    if (!first_name || first_name === "") {
+      return next({
+        status: 400,
+        message: "first_name is missing or empty."
+      });
+    }
+
+    //Check to see if last_name is missing or empty
+    if (!last_name || last_name === "") {
+      return next({
+        status: 400,
+        message: "last_name is missing or empty."
+      });
+    }
+
+    //Check to see if mobile_number is missing or empty
+    if (!mobile_number || mobile_number === "") {
+      return next({
+        status: 400,
+        message: "mobile_number is missing or empty."
+      });
+    }
+
+    //Check to see if reservation_date is missing or empty
+    if (!reservation_date || reservation_date === "") {
+      return next({
+        status: 400,
+        message: "reservation_date is missing or empty."
+      });
+    }
+
+    //Check to see if reservation_time is missing or empty
+    if (!reservation_time || reservation_time === "") {
+      return next({
+        status: 400,
+        message: "reservation_time is missing or empty."
+      });
+    }
+
+    //Check to see if people is missing or empty
+    if (!people || people === "") {
+      return next({
+        status: 400,
+        message: "people is missing or empty."
+      });
+    }
+  }
 
   async function reservationExists(req, res, next) {
     const reservationId = req.params.reservation_id;
@@ -59,6 +104,22 @@ const hasRequiredProperties = hasProperties(
       message: `Reservation cannot be found.`,
     });
   }
+
+  // function hasValidDate(req, res, next) {
+  //   const { data = {} } = req.body;
+  // }
+
+  // function hasValidTime(req, res, next) {}
+
+  // function hasValidPeople(req, res, next) {}
+
+  // function hasValidStatus(req, res, next) {}
+
+  //function isNotTuesday(req, res, next) {}
+
+  //function isNotPast(req, res, next) {}
+  
+
 
 
   /**
@@ -75,7 +136,9 @@ async function read(req, res) {
 
 
 module.exports = {
+  hasOnlyValidProperties: [hasOnlyValidProperties],
   list: [asyncErrorBoundary(list)],
   read: [asyncErrorBoundary(read)],
+  create: [hasRequiredProperties, asyncErrorBoundary(create)],
   reservationExists: [asyncErrorBoundary(reservationExists)],
 };
