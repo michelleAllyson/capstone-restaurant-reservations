@@ -39,77 +39,105 @@ const hasRequiredProperties = hasProperties(
     next();
   }
 
-
-  function create(req, res, next) {
-    const { data: { first_name, last_name, reservation_date, reservation_time, people } = {} } = req.body;
-    
-    //Check to see if first_name is missing or empty
-    if (!first_name || first_name === "") {
-      return next({
-        status: 400,
-        message: "first_name is missing or empty."
-      });
-    }
-
-    //Check to see if last_name is missing or empty
-    if (!last_name || last_name === "") {
-      return next({
-        status: 400,
-        message: "last_name is missing or empty."
-      });
-    }
-
-    //Check to see if mobile_number is missing or empty
-    if (!mobile_number || mobile_number === "") {
-      return next({
-        status: 400,
-        message: "mobile_number is missing or empty."
-      });
-    }
-
-    //Check to see if reservation_date is missing or empty
-    if (!reservation_date || reservation_date === "") {
-      return next({
-        status: 400,
-        message: "reservation_date is missing or empty."
-      });
-    }
-
-    //Check to see if reservation_time is missing or empty
-    if (!reservation_time || reservation_time === "") {
-      return next({
-        status: 400,
-        message: "reservation_time is missing or empty."
-      });
-    }
-
-    //Check to see if people is missing or empty
-    if (!people || people === "") {
-      return next({
-        status: 400,
-        message: "people is missing or empty."
-      });
-    }
-  }
-
   async function reservationExists(req, res, next) {
     const reservationId = req.params.reservation_id;
-    const reservation = await reservationsService.read(reservationId);
-    if (reservation) {
-      res.locals.reservation = reservation;
-      return next();
+    try {
+      const reservation = await reservationsService.read(reservationId);
+      if (reservation) {
+        res.locals.reservation = reservation;
+        return next();
+      }
+      return next({
+        status: 404,
+        message: `Reservation with id ${reservationId} cannot be found.`,
+      });
+    } catch (error) {
+      next(error);
     }
-    next({
-      status: 404,
-      message: `Reservation cannot be found.`,
-    });
   }
 
-  // function hasValidDate(req, res, next) {
-  //   const { data = {} } = req.body;
-  // }
 
-  // function hasValidTime(req, res, next) {}
+  function create(req, res, next) {
+    const { data: { first_name, last_name, mobile_number, reservation_date, reservation_time, people } = {} } = req.body;
+    
+    if (!first_name || first_name.trim() === "") {
+        return next({
+            status: 400,
+            message: "first_name is missing or empty."
+        });
+    }
+
+    if (!last_name || last_name.trim() === "") {
+        return next({
+            status: 400,
+            message: "last_name is missing or empty."
+        });
+    }
+
+    if (!mobile_number || mobile_number.trim() === "") {
+        return next({
+            status: 400,
+            message: "mobile_number is missing or empty."
+        });
+    }
+
+    if (!reservation_date || reservation_date.trim() === "") {
+        return next({
+            status: 400,
+            message: "reservation_date is missing or empty."
+        });
+    }
+
+    if (!reservation_time || reservation_time.trim() === "") {
+        return next({
+            status: 400,
+            message: "reservation_time is missing or empty."
+        });
+    }
+
+    if (!people || isNaN(people) || people <= 0) {
+        return next({
+            status: 400,
+            message: "people must be a positive integer."
+        });
+    }
+
+    if (!isValidDate(reservation_date)) {
+      return next({
+          status: 400,
+          message: "Invalid reservation_date."
+      });
+  }
+
+  if (!isValidTime(reservation_time)) {
+      return next({
+          status: 400,
+          message: "Invalid reservation_time."
+      });
+  }
+
+  if (!Number.isInteger(people) || people <= 0) {
+      return next({
+          status: 400,
+          message: "People must be a positive integer."
+      });
+  }
+
+  next();
+}
+
+function isValidDate(dateString) {
+  const regEx = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateString.match(regEx)) return false;  // Invalid format
+  const d = new Date(dateString);
+  const dNum = d.getTime();
+  if (!dNum && dNum !== 0) return false; // NaN value, Invalid date
+  return d.toISOString().slice(0, 10) === dateString;
+}
+
+function isValidTime(timeString) {
+  return /^([01]\d|2[0-3]):([0-5]\d)$/.test(timeString);
+}
 
   // function hasValidPeople(req, res, next) {}
 
@@ -130,9 +158,23 @@ async function list(req, res) {
   res.json({ data });
 }
 
-async function read(req, res) {
-  res.json({ data: res.locals.reservation });
+async function read(req, res, next) {
+  const { reservation_id } = req.params;
+  try {
+      const reservation = await reservationsService.read(reservation_id);
+      if (reservation) {
+          res.json({ data: reservation });
+      } else {
+          next({
+              status: 404,
+              message: `Reservation with id ${reservation_id} not found.`,
+          });
+      }
+  } catch (error) {
+      next(error);
+  }
 }
+
 
 
 module.exports = {
