@@ -1,6 +1,11 @@
 # Capstone: Restaurant Reservation System
 
 - CHANGE LOG (to be deleted later)
+  
+  - 4/12
+    - Added database URL to test in env. (why tests were not passing)
+    - 21 out of 21 tests passing for US-01
+  
   - 4/10 1st commit: migration and seed data for reservations table complete
         - 2nd commit: ReservationForm.js and ReservationError.js components created 
         - 3rd commit: Errors added, work on reservation frontend and backend

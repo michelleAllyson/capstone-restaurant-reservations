@@ -57,7 +57,7 @@ const hasRequiredProperties = hasProperties(
   }
 
 
-  function create(req, res, next) {
+  async function create(req, res, next) {
     const { data: { first_name, last_name, mobile_number, reservation_date, reservation_time, people } = {} } = req.body;
     
     if (!first_name || first_name.trim() === "") {
@@ -119,11 +119,11 @@ const hasRequiredProperties = hasProperties(
   if (!Number.isInteger(people) || people <= 0) {
       return next({
           status: 400,
-          message: "People must be a positive integer."
+          message: "people must be a positive integer."
       });
   }
-
-  next();
+    const reservation = await reservationsService.create(req.body.data)
+    res.status(201).json({data:reservation})
 }
 
 function isValidDate(dateString) {
@@ -153,10 +153,11 @@ function isValidTime(timeString) {
   /**
    * List handler for reservation resources
    */
-async function list(req, res) {
-  const data = await reservationsService.list();
-  res.json({ data });
-}
+  async function list(req, res) {
+    const {date} = req.query;
+    const data = await reservationsService.list(date);
+    res.json({ data });
+    }
 
 async function read(req, res, next) {
   const { reservation_id } = req.params;
