@@ -139,10 +139,10 @@ function isValidTime(timeString) {
   return /^([01]\d|2[0-3]):([0-5]\d)$/.test(timeString);
 }
   
-function onlyFutureResrvations(req, res, next) {
-  const { reservation_date, reservation_time } = req.body;
-  const now = new Date();
-  const proposedReservationDate = new Date(`${reservation_date} ${reservation_time}`);
+function onlyFutureReservations(req, res, next) {
+  const { reservation_date, reservation_time } = req.body.data;
+  const now = Date.now();
+  const proposedReservationDate = new Date(`${reservation_date} ${reservation_time}`).valueOf();
   if (proposedReservationDate < now) {
     return next({
       status: 400,
@@ -153,9 +153,9 @@ function onlyFutureResrvations(req, res, next) {
 }
 
 function notTuesday(req, res, next) {
-  const { reservation_date } = req.body;
-  const proposedReservationDate = new Date(reservation_date);
-  if (proposedReservationDate.getDay() === 2) {
+  const { reservation_date } = req.body.data;
+  const proposedReservationDate = new Date(reservation_date).getUTCDay();
+  if (proposedReservationDate === 2) {
     return next({
       status: 400,
       message: "Restaurant is closed on Tuesdays." 
@@ -195,11 +195,13 @@ async function read(req, res, next) {
 
 
 module.exports = {
-  hasOnlyValidProperties: [hasOnlyValidProperties],
   list: [asyncErrorBoundary(list)],
   read: [asyncErrorBoundary(read)],
-  create: [hasRequiredProperties, asyncErrorBoundary(create)],
+  create: [
+    hasOnlyValidProperties,
+    hasRequiredProperties, 
+    notTuesday,
+    onlyFutureReservations,
+    asyncErrorBoundary(create)],
   reservationExists: [asyncErrorBoundary(reservationExists)],
-  onlyFutureResrvations: [onlyFutureResrvations],
-  notTuesday: [notTuesday],
 };

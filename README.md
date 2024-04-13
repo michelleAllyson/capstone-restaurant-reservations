@@ -2,6 +2,9 @@
 
 - CHANGE LOG (to be deleted later)
   
+  - 4/13
+    - 2 out of 2 tests passing for US-02
+
   - 4/12
     - Added database URL to test in env. (why tests were not passing)
     - 21 out of 21 tests passing for US-01
