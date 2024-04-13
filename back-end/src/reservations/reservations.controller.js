@@ -138,15 +138,31 @@ function isValidDate(dateString) {
 function isValidTime(timeString) {
   return /^([01]\d|2[0-3]):([0-5]\d)$/.test(timeString);
 }
-
-  // function hasValidPeople(req, res, next) {}
-
-  // function hasValidStatus(req, res, next) {}
-
-  //function isNotTuesday(req, res, next) {}
-
-  //function isNotPast(req, res, next) {}
   
+function onlyFutureResrvations(req, res, next) {
+  const { reservation_date, reservation_time } = req.body;
+  const now = new Date();
+  const proposedReservationDate = new Date(`${reservation_date} ${reservation_time}`);
+  if (proposedReservationDate < now) {
+    return next({
+      status: 400,
+      message: "Reservation must be in the future." 
+    });
+  }
+  next();
+}
+
+function notTuesday(req, res, next) {
+  const { reservation_date } = req.body;
+  const proposedReservationDate = new Date(reservation_date);
+  if (proposedReservationDate.getDay() === 2) {
+    return next({
+      status: 400,
+      message: "Restaurant is closed on Tuesdays." 
+    });
+  }
+  next();
+}
 
 
 
@@ -184,4 +200,6 @@ module.exports = {
   read: [asyncErrorBoundary(read)],
   create: [hasRequiredProperties, asyncErrorBoundary(create)],
   reservationExists: [asyncErrorBoundary(reservationExists)],
+  onlyFutureResrvations: [onlyFutureResrvations],
+  notTuesday: [notTuesday],
 };
