@@ -2,6 +2,11 @@
 
 - CHANGE LOG (to be deleted later)
   
+  - 4/14
+    - 1 out of 1 tests passing for US-03
+    - 2 out of 17 tests passing for US-04
+      - tables controller, service, and router files created, work in progress.
+
   - 4/13
     - 2 out of 2 tests passing for US-02
 

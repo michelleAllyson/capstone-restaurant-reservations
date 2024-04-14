@@ -152,6 +152,26 @@ function onlyFutureReservations(req, res, next) {
   next();
 }
 
+function isWithinBusinessHours(req, res, next) {
+  const { reservation_time } = req.body.data;
+  const now = Date.now();
+  const proposedReservationTime = new Date(`1970-01-01 ${reservation_time}`).getHours();
+  if (proposedReservationTime < 10 || proposedReservationTime >= 21) {
+    return next({
+      status: 400,
+      message: "Reservation must be between 10:30 AM and 9:30 PM." 
+    });
+    if (proposedReservationTime < now) {
+      return next({
+        status: 400,
+        message: "Reservation must be in the future." 
+      });
+    }
+  }
+  next();
+
+}
+
 function notTuesday(req, res, next) {
   const { reservation_date } = req.body.data;
   const proposedReservationDate = new Date(reservation_date).getUTCDay();
@@ -202,6 +222,7 @@ module.exports = {
     hasRequiredProperties, 
     notTuesday,
     onlyFutureReservations,
+    isWithinBusinessHours,
     asyncErrorBoundary(create)],
   reservationExists: [asyncErrorBoundary(reservationExists)],
 };
