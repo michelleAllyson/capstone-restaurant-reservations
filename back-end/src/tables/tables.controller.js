@@ -4,6 +4,7 @@ const hasProperties = require("../errors/hasProperties");
 const { table } = require("../db/connection");
 
 const hasRequiredProperties = hasProperties("table_name", "capacity");
+const hasReservationId = hasProperties("reservation_id");
 
 const VALID_PROPERTIES = [
     "table_id",
@@ -46,6 +47,18 @@ async function tableExists(req, res, next) {
     }
 }
 
+async function reservationExists(req, res, next) {
+    const reservation = await service.readReservation(req.body.data.reservation_id);
+    if (reservation) {
+      res.locals.reservation = reservation;
+      return next();
+    }
+    next({
+      status: 404,
+      message: `reservation_id ${req.body.data.reservation_id} does not exist`,
+    })
+  }
+
 async function create (req, res, next) {
     const { data: { table_name, capacity, reservation_id, table_status } = {} } = req.body;
 
@@ -84,9 +97,9 @@ async function create (req, res, next) {
             message: `Table status cannot be occupied when creating a new table.`,
         });
     }
-    
-        const newTable = await tablesService.create(req.body.data)
-        res.status(201).json({ data: newTable }); 
+        //created new table in service file..do I still need this?
+        // const newTable = await tablesService.create(req.body.data)
+        // res.status(201).json({ data: newTable }); 
 
 }
 
@@ -108,7 +121,10 @@ module.exports = {
     create: [
         hasOnlyValidProperties,
         hasRequiredProperties,
+        hasReservationId,
+        reservationExists,
         asyncErrorBoundary(create),
     ],
+    update: [asyncErrorBoundary(update)],
     tableExists: [asyncErrorBoundary(tableExists)],
 };
