@@ -50,7 +50,7 @@ function hasValidProperties(req, res, next) {
             message: "capacity must be a number greater than zero.",
         });
     }
-    if (typeOf (capacity) !== "number") {
+    if (typeof(capacity) !== "number") {
         return next({
             status: 400,
             message: "capacity must be a number.",
@@ -75,9 +75,8 @@ function hasOnlyValidProperties(req, res, next) {
 }
 
 async function tableExists(req, res, next) {
+    const table = await service.read(table_id);
     const tableId = req.params.table_id;
-    try {
-        const table = await tablesService.read(tableId);
         if (table) {
             res.locals.table = table;
             return next();
@@ -86,10 +85,7 @@ async function tableExists(req, res, next) {
             status: 404,
             message: `Table with id ${tableId} cannot be found.`,
         });
-    } catch (error) {
-        next(error);
     }
-}
 
 async function reservationExists(req, res, next) {
     const reservation = await service.readReservation(req.body.data.reservation_id);
