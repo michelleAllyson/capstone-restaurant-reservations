@@ -1,9 +1,7 @@
 const knex = require("../db/connection");
 
-const tableName = "tables";
-
 function create (newTable) {
-    return knex (tableName)
+    return knex ("tables")
     .insert({
         ...newTable,
         "table_status": newTable.reservation_id ? "occupied" : "free",
@@ -13,7 +11,7 @@ function create (newTable) {
 }
 
 function read(table_id) {
-    return knex(tableName)
+    return knex("tables")
     .select("*")
     .where({ "table_id" : table_id })
     .first();
@@ -26,17 +24,24 @@ function readReservation(reservation_id) {
     .first();
 }
 
-
-
 function list() {
-    return knex(tableName)
+    return knex("tables")
         .select("*")
         .orderBy("table_name");
 }
+
+function update(reservation_id, table_id) {
+    return knex("tables")
+    .where({ table_id: table_id })
+    .update({ reservation_id: reservation_id })
+    .returning("*")
+}
+
 
 module.exports = {
     list,
     read,
     create,
     readReservation,
+    update,
 };

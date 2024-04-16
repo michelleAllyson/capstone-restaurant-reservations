@@ -7,12 +7,56 @@ const hasRequiredProperties = hasProperties("table_name", "capacity");
 const hasReservationId = hasProperties("reservation_id");
 
 const VALID_PROPERTIES = [
-    "table_id",
     "table_name",
     "capacity",
     "reservation_id",
-    "table_status",
     ];
+
+function hasData(req, res, next) {
+    if (req.body.data) {
+        return next();
+    } else {
+        next({
+            status: 400,
+            message: "Data is missing.",
+        });
+    }
+}
+
+function hasValidProperties(req, res, next) {
+    const { data: { table_name, capacity } } = req.body;
+
+    if (!table_name || table_name === "") {
+        return next({
+            status: 400,
+            message: "table_name is missing or empty.",
+        });
+    }
+    if (table_name.length < 2) {
+        return next({
+            status: 400,
+            message: "table_name must be at least 2 characters long.",
+        });
+    }
+    if (!capacity || capacity === "") {
+        return next({
+            status: 400,
+            message: "capacity is missing or empty.",
+        });
+    }
+    if (isNaN(capacity) || capacity <= 0) {
+        return next({
+            status: 400,
+            message: "capacity must be a number greater than zero.",
+        });
+    }
+    if (typeOf (capacity) !== "number") {
+        return next({
+            status: 400,
+            message: "capacity must be a number.",
+        });
+    }      
+}
 
 function hasOnlyValidProperties(req, res, next) {
     const { data = {} } = req.body;
@@ -60,7 +104,7 @@ async function reservationExists(req, res, next) {
   }
 
 async function create (req, res, next) {
-    const { data: { table_name, capacity, reservation_id, table_status } = {} } = req.body;
+    const { data: { table_name, table_status } = {} } = req.body;
 
     if ( !table_name || table_name === "") {
         return next({
@@ -98,8 +142,8 @@ async function create (req, res, next) {
         });
     }
         //created new table in service file..do I still need this?
-        // const newTable = await tablesService.create(req.body.data)
-        // res.status(201).json({ data: newTable }); 
+        const newTable = await tablesService.create(req.body.data)
+        res.status(201).json({ data: newTable }); 
 
 }
 
@@ -113,12 +157,21 @@ async function read(req, res) {
     res.json({ data: table });
 }
 
+async function update(req, res, next) {
+    const { reservation_id } = req.body.data;
+    const { table_id } = req.params;
+    const data = await tablesService.update(reservation_id, Number(table_id));
+    res.json({ data });
+}
+
 
 
 module.exports = {
     list: [asyncErrorBoundary(list)],
     read: [tableExists, asyncErrorBoundary(read)],
     create: [
+        hasData,
+        hasValidProperties,
         hasOnlyValidProperties,
         hasRequiredProperties,
         hasReservationId,
