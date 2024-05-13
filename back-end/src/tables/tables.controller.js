@@ -8,6 +8,8 @@ const hasReservationId = hasProperties("reservation_id");
 
 const VALID_PROPERTIES = [
     "table_name",
+    "table_status",
+    "table_id",
     "capacity",
     "reservation_id",
     ];
@@ -75,7 +77,7 @@ function hasOnlyValidProperties(req, res, next) {
 }
 
 async function tableExists(req, res, next) {
-    const table = await service.read(table_id);
+    const table = await tablesService.read(table_id);
     const tableId = req.params.table_id;
         if (table) {
             res.locals.table = table;
@@ -88,7 +90,7 @@ async function tableExists(req, res, next) {
     }
 
 async function reservationExists(req, res, next) {
-    const reservation = await service.readReservation(req.body.data.reservation_id);
+    const reservation = await tablesService.readReservation(req.body.data.reservation_id);
     if (reservation) {
       res.locals.reservation = reservation;
       return next();
@@ -101,9 +103,11 @@ async function reservationExists(req, res, next) {
 
 
 
-async function create(req, res) {
-    const newTable = req.body.data;
-    const data = await service.create(newTable);
+
+    
+  async function create(req, res) {
+  const newTable = req.body.data;
+    const data = await tablesService.create(newTable);
     res.status(201).json({ data });
   }
 
