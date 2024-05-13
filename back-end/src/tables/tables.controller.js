@@ -99,49 +99,13 @@ async function reservationExists(req, res, next) {
     })
   }
 
-async function create (req, res, next) {
-    const { data: { table_name, table_status } = {} } = req.body;
-
-    if ( !table_name || table_name === "") {
-        return next({
-            status: 400,
-            message: "table_name is missing or empty.",
-        });
-    }
-
-    if ( table_name.length < 2 ) {
-        return next({
-            status: 400,
-            message: "table_name must be at least 2 characters long.",
-        });
-    }
-
-    if ( !capacity || capacity === "") {
-        return next({
-            status: 400,
-            message: "capacity is missing or empty.",
-        });
-    }
-
-    if (isNaN(capacity) || capacity <= 0 ) {
-        return next({
-            status: 400,
-            message: "capacity must be a number greater than zero.",
-        });
-    }
 
 
-    if (table_status === "occupied") {
-        return next({
-            status: 400,
-            message: `Table status cannot be occupied when creating a new table.`,
-        });
-    }
-        //created new table in service file..do I still need this?
-        const newTable = await tablesService.create(req.body.data)
-        res.status(201).json({ data: newTable }); 
-
-}
+async function create(req, res) {
+    const newTable = req.body.data;
+    const data = await service.create(newTable);
+    res.status(201).json({ data });
+  }
 
 async function list(req, res) {
     const data = await tablesService.list();
@@ -177,3 +141,48 @@ module.exports = {
     update: [asyncErrorBoundary(update)],
     tableExists: [asyncErrorBoundary(tableExists)],
 };
+
+
+
+// async function create (req, res, next) {
+//     const { data: { table_name, table_status } = {} } = req.body;
+
+//     if ( !table_name || table_name === "") {
+//         return next({
+//             status: 400,
+//             message: "table_name is missing or empty.",
+//         });
+//     }
+
+//     if ( table_name.length < 2 ) {
+//         return next({
+//             status: 400,
+//             message: "table_name must be at least 2 characters long.",
+//         });
+//     }
+
+//     if ( !capacity || capacity === "") {
+//         return next({
+//             status: 400,
+//             message: "capacity is missing or empty.",
+//         });
+//     }
+
+//     if (isNaN(capacity) || capacity <= 0 ) {
+//         return next({
+//             status: 400,
+//             message: "capacity must be a number greater than zero.",
+//         });
+//     }
+
+
+//     if (table_status === "occupied") {
+//         return next({
+//             status: 400,
+//             message: `Table status cannot be occupied when creating a new table.`,
+//         });
+//     }
+//         // const newTable = await tablesService.create(req.body.data)
+//         // res.status(201).json({ data: newTable }); 
+
+// }
