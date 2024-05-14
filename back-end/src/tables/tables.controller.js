@@ -57,7 +57,8 @@ function hasValidProperties(req, res, next) {
             status: 400,
             message: "capacity must be a number.",
         });
-    }      
+    } 
+    next();     
 }
 
 function hasOnlyValidProperties(req, res, next) {
@@ -128,7 +129,7 @@ async function update(req, res, next) {
     res.json({ data });
 }
 
-
+//add middleware function to validate body data for update function
 
 module.exports = {
     list: [asyncErrorBoundary(list)],
@@ -138,8 +139,6 @@ module.exports = {
         hasValidProperties,
         hasOnlyValidProperties,
         hasRequiredProperties,
-        hasReservationId,
-        reservationExists,
         asyncErrorBoundary(create),
     ],
     update: [asyncErrorBoundary(update)],

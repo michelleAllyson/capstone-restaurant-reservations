@@ -1,14 +1,12 @@
 const knex = require("../db/connection");
 
 
-function create(newTable) {
-    return knex("tables") 
-    .insert({
-        ...newTable,
-        "table_status": newTable.reservation_id ? "occupied" : "free",
-    })
-    .returning("*")
-}
+function create(table) {
+    return knex("tables")
+      .insert(table)
+      .returning("*")
+      .then((createdRecords) => createdRecords[0]);
+  }
 
 
 function read(table_id) {
