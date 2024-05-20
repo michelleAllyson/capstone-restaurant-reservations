@@ -102,7 +102,18 @@ async function reservationExists(req, res, next) {
     })
   }
 
+  function hasSufficientCapacity(req, res, next) {
+    const { table, reservation } = res.locals;
+    if (table.capacity < reservation.people) {
+      return next({
+        status: 400,
+        message: "Table does not have sufficient capacity for this reservation",
+      });
+    }
+    next();
+  }
 
+  
 
 
     
@@ -141,7 +152,12 @@ module.exports = {
         hasRequiredProperties,
         asyncErrorBoundary(create),
     ],
-    update: [asyncErrorBoundary(update)],
+    update: [
+        reservationExists,
+        hasData,
+        hasReservationId,
+        asyncErrorBoundary(update),
+    ],
     tableExists: [asyncErrorBoundary(tableExists)],
 };
 
