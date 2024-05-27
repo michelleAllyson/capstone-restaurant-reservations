@@ -78,8 +78,8 @@ function hasOnlyValidProperties(req, res, next) {
 }
 
 async function tableExists(req, res, next) {
-    const table = await tablesService.read(table_id);
-    const tableId = req.params.table_id;
+    const tableId = req.params.table_id; 
+    const table = await tablesService.read(tableId);
         if (table) {
             res.locals.table = table;
             return next();
@@ -122,10 +122,18 @@ async function reservationExists(req, res, next) {
         });
     }
     next();
-}
+  }
 
-
-
+  function updateData(req, res, next) {
+    const { reservation_id } = req.body.data;
+    if (!reservation_id) {
+        return next({
+            status: 400,
+            message: "reservation_id is missing.",
+        });
+    }
+    next();
+    }
     
   async function create(req, res) {
   const newTable = req.body.data;
@@ -164,7 +172,8 @@ module.exports = {
     ],
     update: [
         reservationExists,
-        hasData,
+        tableExists,
+        updateData,
         hasReservationId,
         hasSufficientCapacity,
         tableIsOccupied,
