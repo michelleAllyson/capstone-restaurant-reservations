@@ -116,15 +116,14 @@ async function reservationExists(req, res, next) {
 
   function tableIsOccupied(req, res, next) {
     const { table } = res.locals;
-    if (table.reservation_id) {
+    if (table.reservation_id === null) {
         return next({
             status: 400,
-            message: "Table is occupied.",
+            message: "Table is not occupied.",
         });
     }
     next();
   }
-
 
 
   function updateData(req, res, next) {
@@ -162,8 +161,8 @@ async function update(req, res, next) {
 }
 
 async function destroy(req, res) {
-    const { reservation_id } = res.body.data;
-    const { table_id } = res.params;
+    const reservation_id = res.locals.table.reservation_id;
+    const { table_id } = req.params;
     const data = await tablesService.destroy(reservation_id, table_id);
     res.status(200).json({ data });
 }
@@ -185,12 +184,11 @@ module.exports = {
         tableExists,
         updateData,
         hasSufficientCapacity,
-        tableIsOccupied,
         asyncErrorBoundary(update),
     ],
     destroy: [
         asyncErrorBoundary(tableExists),
-        reservationExists,
+        tableExists,
         tableIsOccupied,
         asyncErrorBoundary(destroy),
     ],

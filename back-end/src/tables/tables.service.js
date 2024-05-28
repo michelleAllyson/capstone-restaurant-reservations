@@ -44,6 +44,12 @@ function update(reservation_id, table_id) {
     .returning("*")
 }
 
+function destroy(table_id) {
+    return knex("tables")
+    .where({ table_id })
+    .returning("*")
+}
+
 
 module.exports = {
     list,
@@ -52,4 +58,5 @@ module.exports = {
     readReservation,
     readTable,
     update,
+    destroy,
 };
