@@ -161,11 +161,10 @@ async function update(req, res, next) {
 }
 
 async function destroy(req, res) {
-    const data = await tablesService.destroy(
-        res.locals.reservation.reservation_id,
-        res.locals.table.table_id
-        );
-        res.status(200).json({ data });
+    const { reservation_id } = res.body.data;
+    const { table_id } = res.params;
+    const data = await tablesService.destroy(reservation_id, table_id);
+    res.status(200).json({ data });
 }
 
 module.exports = {
