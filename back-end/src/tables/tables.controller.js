@@ -1,7 +1,7 @@
 const tablesService = require("./tables.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
-const { table, as } = require("../db/connection");
+const { table } = require("../db/connection");
 
 const hasRequiredProperties = hasProperties("table_name", "capacity");
 const hasReservationId = hasProperties("reservation_id");
@@ -91,6 +91,7 @@ async function tableExists(req, res, next) {
     }
 
 async function reservationExists(req, res, next) {
+    console.log(req.body.data);
     const reservation = await tablesService.readReservation(req.body.data.reservation_id);
     if (reservation) {
       res.locals.reservation = reservation;
