@@ -8,21 +8,14 @@ function create(table) {
       .then((createdRecords) => createdRecords[0]);
   }
 
-
-function read(table_id) {
-    return knex("tables as t")
-        .join("reservations as r", "t.reservation_id", "r.reservation_id")
-        .select(
-            "t.*",
-            "r.first_name",
-            "r.last_name",
-            "r.mobile_number",
-            "r.reservation_date",
-            "r.reservation_time",
-            "r.people",
-            "r.reservation_id"
-        )
+  function read(table_id) {
+    return knex("tables")
+        .select("*")
+        .where({ table_id })
+        .first();
 }
+
+
 
 function readReservation(reservation_id) {
     return knex("reservations")

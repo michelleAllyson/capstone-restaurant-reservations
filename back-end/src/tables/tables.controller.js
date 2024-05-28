@@ -1,7 +1,7 @@
 const tablesService = require("./tables.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
-const { table } = require("../db/connection");
+const { table, as } = require("../db/connection");
 
 const hasRequiredProperties = hasProperties("table_name", "capacity");
 const hasReservationId = hasProperties("reservation_id");
@@ -124,6 +124,8 @@ async function reservationExists(req, res, next) {
     next();
   }
 
+
+
   function updateData(req, res, next) {
     const { reservation_id } = req.body.data;
     if (!reservation_id) {
@@ -158,7 +160,13 @@ async function update(req, res, next) {
     res.json({ data });
 }
 
-//add middleware function to validate body data for update function
+async function destroy(req, res) {
+    const data = await tablesService.destroy(
+        res.locals.reservation.reservation_id,
+        res.locals.table.table_id
+        );
+        res.status(200).json({ data });
+}
 
 module.exports = {
     list: [asyncErrorBoundary(list)],
@@ -171,58 +179,20 @@ module.exports = {
         asyncErrorBoundary(create),
     ],
     update: [
+        hasData,
+        hasReservationId,
         reservationExists,
         tableExists,
         updateData,
-        hasReservationId,
         hasSufficientCapacity,
         tableIsOccupied,
         asyncErrorBoundary(update),
     ],
-    tableExists: [asyncErrorBoundary(tableExists)],
+    destroy: [
+        asyncErrorBoundary(tableExists),
+        reservationExists,
+        tableIsOccupied,
+        asyncErrorBoundary(destroy),
+    ],
 };
 
-
-
-// async function create (req, res, next) {
-//     const { data: { table_name, table_status } = {} } = req.body;
-
-//     if ( !table_name || table_name === "") {
-//         return next({
-//             status: 400,
-//             message: "table_name is missing or empty.",
-//         });
-//     }
-
-//     if ( table_name.length < 2 ) {
-//         return next({
-//             status: 400,
-//             message: "table_name must be at least 2 characters long.",
-//         });
-//     }
-
-//     if ( !capacity || capacity === "") {
-//         return next({
-//             status: 400,
-//             message: "capacity is missing or empty.",
-//         });
-//     }
-
-//     if (isNaN(capacity) || capacity <= 0 ) {
-//         return next({
-//             status: 400,
-//             message: "capacity must be a number greater than zero.",
-//         });
-//     }
-
-
-//     if (table_status === "occupied") {
-//         return next({
-//             status: 400,
-//             message: `Table status cannot be occupied when creating a new table.`,
-//         });
-//     }
-//         // const newTable = await tablesService.create(req.body.data)
-//         // res.status(201).json({ data: newTable }); 
-
-// }
