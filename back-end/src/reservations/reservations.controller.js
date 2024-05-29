@@ -214,6 +214,17 @@ async function read(req, res, next) {
 }
 
 
+// async function update(req, res, next) {
+//   const { reservation_id } = req.params;
+//   const { status } = req.body.data;
+//   const updatedReservation = {
+//     reservation_id,
+//     status,
+//   };
+//   const data = await reservationsService.update(updatedReservation);
+//   res.json({ data });
+// }
+
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
@@ -225,5 +236,8 @@ module.exports = {
     onlyFutureReservations,
     isWithinBusinessHours,
     asyncErrorBoundary(create)],
+  // update: [
+  //   asyncErrorBoundary(update)
+  // ],
   reservationExists: [asyncErrorBoundary(reservationExists)],
 };

@@ -24,7 +24,7 @@ router
 
 // router
 //     .route("/:reservation_id/status")
-//     .put(controller.update)
+//     // .put(controller.update)
 //     .all(methodNotAllowed);
 
 // router
