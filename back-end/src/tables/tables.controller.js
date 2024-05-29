@@ -91,7 +91,6 @@ async function tableExists(req, res, next) {
     }
 
 async function reservationExists(req, res, next) {
-    console.log(req.body.data);
     const reservation = await tablesService.readReservation(req.body.data.reservation_id);
     if (reservation) {
       res.locals.reservation = reservation;
@@ -114,7 +113,7 @@ async function reservationExists(req, res, next) {
     next();
   }
 
-  function tableIsOccupied(req, res, next) {
+  function tableIsNotOccupied(req, res, next) {
     const { table } = res.locals;
     if (table.reservation_id === null) {
         return next({
@@ -189,7 +188,7 @@ module.exports = {
     destroy: [
         asyncErrorBoundary(tableExists),
         tableExists,
-        tableIsOccupied,
+        tableIsNotOccupied,
         asyncErrorBoundary(destroy),
     ],
 };
