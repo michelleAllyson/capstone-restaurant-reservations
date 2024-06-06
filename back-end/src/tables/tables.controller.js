@@ -137,7 +137,15 @@ async function reservationExists(req, res, next) {
   }
 
 
-
+function tableIsNotSeated(req, res, next) {
+    if (res.locals.reservation.status === "seated") {
+        return next({
+            status: 400,
+            message: "Reservation is already seated.",
+        });
+    }
+    next();
+}
 
   function updateData(req, res, next) {
     const { reservation_id } = req.body.data;
@@ -197,6 +205,7 @@ module.exports = {
         tableExists,
         isOccupied,
         updateData,
+        tableIsNotSeated,
         hasSufficientCapacity,
         asyncErrorBoundary(update),
     ],

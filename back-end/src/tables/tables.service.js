@@ -44,12 +44,6 @@ function update(reservation_id, table_id) {
     .returning("*")
 }
 
-// function update(updatedReservation) {
-//     return knex(tableName)
-//       .where({ reservation_id: updatedReservation.reservation_id })
-//       .update(updatedReservation, "*")
-//       .then((updatedRecords) => updatedRecords[0]);
-//   }
 
 function destroy(table_id) {
     return knex("tables")
