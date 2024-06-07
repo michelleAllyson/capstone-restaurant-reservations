@@ -174,12 +174,20 @@ async function read(req, res) {
     res.json({ data: table });
 }
 
+// async function update(req, res, next) {
+//     const { reservation_id } = req.body.data;
+//     const { table_id } = req.params;
+//     const data = await tablesService.update(reservation_id, Number(table_id));
+//     res.json({ data });
+// }
+
 async function update(req, res, next) {
-    const { reservation_id } = req.body.data;
-    const { table_id } = req.params;
-    const data = await tablesService.update(reservation_id, Number(table_id));
+    const table_id = req.params.table_id;
+    const reservation_id = req.body.data.reservation_id;
+    const data = await tablesService.update(table_id, reservation_id);
     res.json({ data });
 }
+
 
 async function destroy(req, res) {
     const reservation_id = res.locals.table.reservation_id;

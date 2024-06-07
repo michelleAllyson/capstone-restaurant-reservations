@@ -59,6 +59,7 @@ function update(table_id, reservation_id) {
     );
 }
 
+
 function destroy(reservation_id, table_id) {
     return knex.transaction((trx) => {
       return trx("reservations")
