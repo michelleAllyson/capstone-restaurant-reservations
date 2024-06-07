@@ -12,10 +12,12 @@ function read(reservation_id) {
 function list(date) {
     let query = knex(tableName).select("*");
     if (date) {
-        query = query.where("reservation_date", date);
+      query = query.where("reservation_date", date);
     }
-    return query.orderBy("reservation_time", "asc");
-}
+    return query
+      .whereNot("status", "finished")
+      .orderBy("reservation_time", "asc");
+  }
 
 function create(reservation) {
     return knex(tableName)
