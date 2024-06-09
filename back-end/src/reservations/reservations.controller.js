@@ -70,7 +70,7 @@ const hasRequiredProperties = hasProperties(
       } = {},
     } = req.body;
   
-    const validStatuses = ['booked', 'seated', 'finished'];
+    const validStatuses = ['booked', 'seated', 'finished', 'cancelled'];
   
     if (!first_name || first_name.trim() === "") {
       return next({
@@ -222,8 +222,11 @@ function notTuesday(req, res, next) {
    * List handler for reservation resources
    */
   async function list(req, res) {
-    const {date} = req.query;
-    const data = await reservationsService.list(date);
+    const date = req.query.date;
+    const mobile_number = req.query.mobile_number;
+    const data = await (date 
+      ? reservationsService.list(date)
+      : reservationsService.search(mobile_number));
     res.json({ data });
     }
 
@@ -269,10 +272,10 @@ async function updateStatus(req, res, next) {
 
   // Check if the reservation is currently finished
   const currentReservation = res.locals.reservation;
-  if (currentReservation.status === 'finished') {
+  if (currentReservation.status === 'finished' || currentReservation.status === 'cancelled') {
     return next({
       status: 400,
-      message: "A finished reservation cannot be updated.",
+      message: 'A finished or cancelled reservation cannot be updated.',
     });
   }
 

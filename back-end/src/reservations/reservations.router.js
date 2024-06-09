@@ -20,7 +20,7 @@ router
 router
     .route("/:reservation_id")
     .get(controller.read)
-    // .put(controller.update)
+    .put(controller.update)
     .all(methodNotAllowed);
 
 router
@@ -33,9 +33,9 @@ router
 //     .get(controller.read)
 //     .all(methodNotAllowed);
 
-// router
-//     .route("/:reservation_id/seat")
-//     .put(controller.update)
-//     .all(methodNotAllowed);
+router
+    .route("/:reservation_id/seat")
+    .put(controller.update)
+    .all(methodNotAllowed);
 
 module.exports = router;
