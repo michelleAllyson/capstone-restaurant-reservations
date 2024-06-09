@@ -247,10 +247,42 @@ async function read(req, res, next) {
   }
 }
 
-async function update(req, res) {
+async function update(req, res, next) {
+  const {
+    data: {
+      reservation_date,
+      reservation_time,
+      people,
+    } = {},
+  } = req.body;
+
+  if (!isValidDate(reservation_date)) {
+    return next({
+      status: 400,
+      message: "Invalid reservation_date."
+    });
+  }
+
+  if (!isValidTime(reservation_time)) {
+    return next({
+      status: 400,
+      message: "Invalid reservation_time."
+    });
+  }
+
+  if (!Number.isInteger(people) || people <= 0) {
+    return next({
+      status: 400,
+      message: "people must be a positive integer."
+    });
+  }
+  
   const updatedRes = {
     ...req.body.data,
     reservation_id: res.locals.reservation.reservation_id,
+    reservation_date: req.body.data.reservation_date,
+    reservation_time: req.body.data.reservation_time,
+    people: req.body.data.people,
   };
   const data = await reservationsService.update(updatedRes);
   res.status(200).json({ data });
@@ -260,7 +292,7 @@ async function updateStatus(req, res, next) {
   const { reservation_id } = req.params;
   const { status } = req.body.data;
 
-  const validStatuses = ['booked', 'seated', 'finished'];
+  const validStatuses = ['booked', 'seated', 'finished', 'cancelled'];
 
   // Check if the provided status is valid
   if (!validStatuses.includes(status)) {
