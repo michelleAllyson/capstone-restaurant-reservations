@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import { today } from "../utils/date-time";
 import { useState } from "react";
 
-export const ReservationNew = () => {
+function ReservationNew () {
 
     const history = useHistory();
 
